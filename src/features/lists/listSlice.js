@@ -19,7 +19,7 @@ export const createList = createAsyncThunk(
   "lists/createList",
   async ({ boardId, title }, { rejectWithValue }) => {
     try {
-      const res = await API.post("/lists", { boardId, title });
+      const res = await API.post("/lists", { board: boardId, title });
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
