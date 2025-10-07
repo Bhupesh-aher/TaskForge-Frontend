@@ -1,10 +1,16 @@
-
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
 
 function App() {
   return (
-    <div className="flex h-screen items-center justify-center text-4xl font-bold text-blue-600">
-      TaskForge Frontend is Live 🚀
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
