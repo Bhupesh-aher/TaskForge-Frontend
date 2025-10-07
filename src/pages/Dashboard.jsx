@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBoards, createBoard } from "../features/boards/boardSlice";
+import { Link } from "react-router-dom";
+
 
 export default function Dashboard() {
   const dispatch = useDispatch();
@@ -40,15 +42,14 @@ export default function Dashboard() {
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
           {boards.length > 0 ? (
             boards.map((board) => (
-              <div
-                key={board._id}
-                className="bg-white shadow-md rounded-lg p-5 cursor-pointer hover:shadow-xl transition"
-              >
+              <Link key={board._id} to={`/board/${board._id}`}>
+              <div className="bg-white shadow-md rounded-lg p-5 cursor-pointer hover:shadow-xl transition">
                 <h2 className="text-xl font-semibold text-gray-700">{board.title}</h2>
                 <p className="text-sm text-gray-500 mt-2">
                   Members: {board.members?.length || 1}
                 </p>
               </div>
+              </Link>
             ))
           ) : (
             <p className="text-gray-500">No boards yet. Create one!</p>
