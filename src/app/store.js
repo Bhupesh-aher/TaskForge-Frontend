@@ -3,6 +3,7 @@ import authReducer from "../features/auth/authSlice";
 import boardReducer from "../features/boards/boardSlice";
 import listReducer from "../features/lists/listSlice";
 import cardReducer from "../features/cards/cardSlice";
+import notificationReducer from "../features/notifications/notificationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     boards: boardReducer,
     lists: listReducer,
     cards: cardReducer,
+    notifications: notificationReducer,
   },
 });
