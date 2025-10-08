@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchLists, createList } from "../features/lists/listSlice";
 import { fetchCards, createCard } from "../features/cards/cardSlice";
+import { socket } from "../socket";
+
 
 export default function BoardDetails() {
   const { id } = useParams();
@@ -11,7 +13,36 @@ export default function BoardDetails() {
   const { cardsByList } = useSelector((s) => s.cards);
   const [newList, setNewList] = useState("");
 
-  useEffect(() => { dispatch(fetchLists(id)); }, [dispatch, id]);
+  useEffect(() => { 
+        dispatch(fetchLists(id));
+        // 🔌 Connect to board room
+        socket.emit("joinBoard", id);
+
+        // Cleanup on unmount
+        return () => socket.emit("leaveBoard", id); 
+    }, [dispatch, id]);
+
+    useEffect(() => {
+        // 🧩 When a new list is created in this board (by any user)
+        socket.on("listCreated", (newList) => {
+            dispatch({ type: "lists/addList", payload: newList });
+        });
+
+        // 🧩 When a new card is created in any list
+        socket.on("cardCreated", ({ listId, card }) => {
+            dispatch({
+            type: "cards/addCard",
+            payload: { listId, card },
+            });
+        });
+
+        // ✅ Clean up event listeners when component unmounts
+        return () => {
+            socket.off("listCreated");
+            socket.off("cardCreated");
+        };
+        }, [dispatch]);
+
 
   const handleCreateList = async (e) => {
     e.preventDefault();

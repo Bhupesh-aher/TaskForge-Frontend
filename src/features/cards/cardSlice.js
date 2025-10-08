@@ -30,7 +30,13 @@ export const createCard = createAsyncThunk(
 const cardSlice = createSlice({
   name: "cards",
   initialState: { cardsByList: {}, loading: false, error: null },
-  reducers: {},
+  reducers: {
+     addCard: (state, action) => {
+      const { listId, card } = action.payload;
+      if (!state.cardsByList[listId]) state.cardsByList[listId] = [];
+      state.cardsByList[listId].push(card);
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchCards.fulfilled, (s, a) => {

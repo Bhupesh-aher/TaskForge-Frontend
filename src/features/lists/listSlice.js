@@ -30,7 +30,11 @@ export const createList = createAsyncThunk(
 const listSlice = createSlice({
   name: "lists",
   initialState: { lists: [], loading: false, error: null },
-  reducers: {},
+  reducers: {
+    addList: (state, action) => {
+      state.lists.push(action.payload);
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchLists.pending, (s) => { s.loading = true; })
