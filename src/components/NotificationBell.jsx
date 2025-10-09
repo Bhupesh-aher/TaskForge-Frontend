@@ -1,9 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchNotifications, markNotificationAsRead } from "../features/notifications/notificationSlice";
 
 export default function NotificationBell() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { list, unreadCount, loading } = useSelector((s) => s.notifications);
   const [open, setOpen] = useState(false);
 
@@ -12,11 +14,15 @@ export default function NotificationBell() {
     if (!list.length) dispatch(fetchNotifications());
   }, [dispatch]);
 
-  const onClickNotification = async (id) => {
-    // optimistic UI: mark locally (optional) then call API
-    await dispatch(markNotificationAsRead(id));
-    // optionally navigate or open related board
-  };
+  const onClickNotification = async (notification) => {
+      await dispatch(markNotificationAsRead(notification._id));
+
+      // Navigate to board if the notification has a board field
+      if (notification.board) {
+        navigate(`/board/${notification.board}`);
+      }
+    };
+
 
   return (
     <div className="relative">
@@ -39,7 +45,7 @@ export default function NotificationBell() {
           {list.map((n) => (
             <div
               key={n._id}
-              onClick={() => onClickNotification(n._id)}
+              onClick={() => onClickNotification(n)}
               className={`p-3 border-b cursor-pointer ${n.isRead ? "bg-white" : "bg-blue-50"}`}
             >
               <p className="text-sm">{n.message}</p>

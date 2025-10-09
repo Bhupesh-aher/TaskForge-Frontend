@@ -11,6 +11,14 @@ export default function Navbar() {
       <Link to="/dashboard" className="font-bold text-xl">TaskForge</Link>
       <div className="flex items-center gap-4">
         <NotificationBell />
+
+         <Link
+              to="/notifications"
+              className="text-sm text-gray-700 hover:underline"
+            >
+              All Notifications
+        </Link>
+
         <button
           onClick={() => dispatch(logout())}
           className="px-3 py-1 border rounded text-sm"

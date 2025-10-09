@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import BoardDetails from "./pages/BoardDetails";
 import Navbar from "./components/Navbar";
+import Notifications from "./pages/Notifications";
 import { useSelector, useDispatch  } from "react-redux";
 import { useEffect } from "react";
 import { socket } from "./socket";
@@ -43,6 +44,7 @@ function App() {
         <Route path="/login" element={<Login />} />
          <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" />} />
          <Route path="/board/:id" element={token ? <BoardDetails /> : <Navigate to="/login" />} />
+         <Route path="/notifications" element={token ? <Notifications /> : <Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   );
