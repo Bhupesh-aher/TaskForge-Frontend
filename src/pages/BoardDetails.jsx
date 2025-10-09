@@ -6,6 +6,8 @@ import { fetchCards, createCard } from "../features/cards/cardSlice";
 import { socket } from "../socket";
 import { addBoardMember } from "../features/boards/boardSlice";
 import { fetchBoardById } from "../features/boards/boardSlice";
+import LoadingSkeleton from "../components/LoadingSkeleton";
+
 
 
 
@@ -108,25 +110,33 @@ export default function BoardDetails() {
 
 
       <div className="flex space-x-6 overflow-x-auto">
-        {lists.map((list) => (
-          <div key={list._id} className="bg-white shadow rounded-lg p-4 min-w-[250px]">
-            <h2 className="font-semibold text-gray-700 mb-3">{list.title}</h2>
-            <div className="space-y-3">
-              {(cardsByList[list._id] || []).map((card) => (
-                <div
-                  key={card._id}
-                  className="bg-gray-100 p-2 rounded text-sm shadow-sm"
-                >
-                  {card.title}
-                </div>
-              ))}
+        {loading ? (
+          <>
+            <LoadingSkeleton />
+            <LoadingSkeleton />
+            <LoadingSkeleton />
+          </>
+        ) : (
+          lists.map((list) => (
+            <div key={list._id} className="bg-white shadow rounded-lg p-4 min-w-[250px]">
+              <h2 className="font-semibold text-gray-700 mb-3">{list.title}</h2>
+              <div className="space-y-3">
+                {(cardsByList[list._id] || []).map((card) => (
+                  <div
+                    key={card._id}
+                    className="bg-gray-100 p-2 rounded text-sm shadow-sm"
+                  >
+                    {card.title}
+                  </div>
+                ))}
+              </div>
+              <AddCardForm onAdd={(title) => handleCreateCard(list._id, title)} />
             </div>
-
-            <AddCardForm onAdd={(title) => handleCreateCard(list._id, title)} />
-          </div>
-        ))}
+          ))
+        )}
 
         {/* Create List */}
+        {!loading && (
         <form
           onSubmit={handleCreateList}
           className="bg-indigo-50 p-4 rounded-lg min-w-[250px]"
@@ -145,6 +155,7 @@ export default function BoardDetails() {
             + Add List
           </button>
         </form>
+         )}
       </div>
     </div>
   );
