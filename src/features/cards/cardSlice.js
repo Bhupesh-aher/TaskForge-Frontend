@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../api/axiosInstance";
+import { toast } from "react-toastify";
+
 
 // Get cards by list
 export const fetchCards = createAsyncThunk(
@@ -43,8 +45,14 @@ const cardSlice = createSlice({
         s.cardsByList[a.payload.listId] = a.payload.cards;
       })
       .addCase(createCard.fulfilled, (s, a) => {
-        s.cardsByList[a.payload.listId].push(a.payload.card);
-      });
+          const { listId, card } = a.payload;
+          if (!s.cardsByList[listId]) s.cardsByList[listId] = [];
+          s.cardsByList[listId].push(card);
+          toast.success("✅ Card added successfully!");
+        })
+        .addCase(createCard.rejected, (s, a) => {
+          toast.error(a.payload?.message || "❌ Failed to add card");
+        });
   },
 });
 

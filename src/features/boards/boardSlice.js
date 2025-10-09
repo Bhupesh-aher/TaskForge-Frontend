@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../api/axiosInstance";
+import { toast } from "react-toastify";
 
 // Fetch all boards for the logged-in user
 export const fetchBoards = createAsyncThunk(
@@ -65,9 +66,18 @@ const boardSlice = createSlice({
       .addCase(createBoard.fulfilled, (state, action) => {
         state.boards.push(action.payload);
       })
-      .addCase(addBoardMember.fulfilled, (state, action) => {
-        console.log("✅ Member added:", action.payload);
-    });
+      .addCase(addBoardMember.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(addBoardMember.fulfilled, (state, action) => {
+          state.loading = false;
+          toast.success(" Member invited successfully!");
+        })
+        .addCase(addBoardMember.rejected, (state, action) => {
+          state.loading = false;
+          toast.error(action.payload?.message || " Failed to invite member");
+        });
+
 
   },
 });

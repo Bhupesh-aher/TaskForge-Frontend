@@ -15,6 +15,9 @@ export default function BoardDetails() {
   const [newList, setNewList] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
 
+  const { loading } = useSelector((s) => s.boards);
+
+
   useEffect(() => { 
         dispatch(fetchLists(id));
         // 🔌 Connect to board room
@@ -80,9 +83,10 @@ export default function BoardDetails() {
         />
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            disabled={loading}
+          className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
         >
-          Invite
+          {loading ? "Inviting..." : "Invite"}
         </button>
       </form>
 

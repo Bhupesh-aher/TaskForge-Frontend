@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../api/axiosInstance";
+import { toast } from "react-toastify";
+
 
 // Get all lists of a board
 export const fetchLists = createAsyncThunk(
@@ -40,7 +42,14 @@ const listSlice = createSlice({
       .addCase(fetchLists.pending, (s) => { s.loading = true; })
       .addCase(fetchLists.fulfilled, (s, a) => { s.loading = false; s.lists = a.payload; })
       .addCase(fetchLists.rejected, (s, a) => { s.loading = false; s.error = a.payload?.message; })
-      .addCase(createList.fulfilled, (s, a) => { s.lists.push(a.payload); });
+      .addCase(createList.fulfilled, (s, a) => {
+        s.lists.push(a.payload);
+        toast.success(" List created successfully!");
+      })
+      .addCase(createList.rejected, (s, a) => {
+        toast.error(a.payload?.message || " Failed to create list");
+      });
+
   },
 });
 

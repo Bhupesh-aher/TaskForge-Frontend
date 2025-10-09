@@ -9,6 +9,8 @@ import { useSelector, useDispatch  } from "react-redux";
 import { useEffect } from "react";
 import { socket } from "./socket";
 import { addNotification, fetchNotifications } from "./features/notifications/notificationSlice";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 function App() {
@@ -46,6 +48,7 @@ function App() {
          <Route path="/board/:id" element={token ? <BoardDetails /> : <Navigate to="/login" />} />
          <Route path="/notifications" element={token ? <Notifications /> : <Navigate to="/login" />} />
       </Routes>
+      <ToastContainer position="top-right" autoClose={2500} />
     </BrowserRouter>
   );
 }
