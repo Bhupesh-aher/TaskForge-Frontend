@@ -27,6 +27,19 @@ export const createBoard = createAsyncThunk(
   }
 );
 
+export const addBoardMember = createAsyncThunk(
+  "boards/addBoardMember",
+  async ({ boardId, email }, { rejectWithValue }) => {
+    try {
+      const res = await API.post(`/boards/${boardId}/members`, { email });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { message: "Failed to add member" });
+    }
+  }
+);
+
+
 const boardSlice = createSlice({
   name: "boards",
   initialState: {
@@ -51,7 +64,11 @@ const boardSlice = createSlice({
       })
       .addCase(createBoard.fulfilled, (state, action) => {
         state.boards.push(action.payload);
-      });
+      })
+      .addCase(addBoardMember.fulfilled, (state, action) => {
+        console.log("✅ Member added:", action.payload);
+    });
+
   },
 });
 

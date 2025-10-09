@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { fetchLists, createList } from "../features/lists/listSlice";
 import { fetchCards, createCard } from "../features/cards/cardSlice";
 import { socket } from "../socket";
+import { addBoardMember } from "../features/boards/boardSlice";
 
 
 export default function BoardDetails() {
@@ -12,6 +13,7 @@ export default function BoardDetails() {
   const { lists } = useSelector((s) => s.lists);
   const { cardsByList } = useSelector((s) => s.cards);
   const [newList, setNewList] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
 
   useEffect(() => { 
         dispatch(fetchLists(id));
@@ -44,21 +46,47 @@ export default function BoardDetails() {
         }, [dispatch]);
 
 
-  const handleCreateList = async (e) => {
-    e.preventDefault();
-    if (!newList.trim()) return;
-    await dispatch(createList({ boardId: id, title: newList }));
-    setNewList("");
-  };
+    const handleInvite = async (e) => {
+          e.preventDefault();
+          if (!inviteEmail.trim()) return;
+          await dispatch(addBoardMember({ boardId: id, email: inviteEmail }));
+          setInviteEmail("");
+    };
 
-  const handleCreateCard = async (listId, title) => {
-    if (!title.trim()) return;
-    await dispatch(createCard({ listId, title }));
-  };
+      const handleCreateList = async (e) => {
+        e.preventDefault();
+        if (!newList.trim()) return;
+        await dispatch(createList({ boardId: id, title: newList }));
+        setNewList("");
+      };
+
+      const handleCreateCard = async (listId, title) => {
+        if (!title.trim()) return;
+        await dispatch(createCard({ listId, title }));
+      };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <h1 className="text-2xl font-bold text-indigo-700 mb-6">Board Details</h1>
+
+      {/*  Invite Member Section —  UI */}
+      <form onSubmit={handleInvite} className="flex gap-2 mb-6">
+        <input
+          type="email"
+          value={inviteEmail}
+          onChange={(e) => setInviteEmail(e.target.value)}
+          placeholder="Invite member by email"
+          className="border p-2 rounded w-64"
+        />
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Invite
+        </button>
+      </form>
+
+
       <div className="flex space-x-6 overflow-x-auto">
         {lists.map((list) => (
           <div key={list._id} className="bg-white shadow rounded-lg p-4 min-w-[250px]">
