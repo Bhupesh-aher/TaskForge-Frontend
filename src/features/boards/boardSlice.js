@@ -2,6 +2,22 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../api/axiosInstance";
 import { toast } from "react-toastify";
 
+
+
+// Fetch single board by ID
+export const fetchBoardById = createAsyncThunk(
+  "boards/fetchBoardById",
+  async (boardId, { rejectWithValue }) => {
+    try {
+      const res = await API.get(`/boards/${boardId}`);
+      return res.data.board || res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { message: "Failed to fetch board details" });
+    }
+  }
+);
+
+
 // Fetch all boards for the logged-in user
 export const fetchBoards = createAsyncThunk(
   "boards/fetchBoards",
@@ -45,12 +61,16 @@ const boardSlice = createSlice({
   name: "boards",
   initialState: {
     boards: [],
+    currentBoard: null,
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(fetchBoardById.fulfilled, (state, action) => {
+        state.currentBoard = action.payload; // store current board
+      })
       .addCase(fetchBoards.pending, (state) => {
         state.loading = true;
         state.error = null;

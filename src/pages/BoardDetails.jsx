@@ -5,6 +5,8 @@ import { fetchLists, createList } from "../features/lists/listSlice";
 import { fetchCards, createCard } from "../features/cards/cardSlice";
 import { socket } from "../socket";
 import { addBoardMember } from "../features/boards/boardSlice";
+import { fetchBoardById } from "../features/boards/boardSlice";
+
 
 
 export default function BoardDetails() {
@@ -16,16 +18,30 @@ export default function BoardDetails() {
   const [inviteEmail, setInviteEmail] = useState("");
 
   const { loading } = useSelector((s) => s.boards);
+  const { currentBoard } = useSelector((s) => s.boards);
+
 
 
   useEffect(() => { 
-        dispatch(fetchLists(id));
-        // 🔌 Connect to board room
-        socket.emit("joinBoard", id);
+      dispatch(fetchBoardById(id));
+      dispatch(fetchLists(id));
+      // 🔌 Connect to board room
+      socket.emit("joinBoard", id);
 
-        // Cleanup on unmount
-        return () => socket.emit("leaveBoard", id); 
+      // Cleanup on unmount
+      return () => socket.emit("leaveBoard", id); 
     }, [dispatch, id]);
+
+    // ✅ When lists are fetched, get cards for each list
+      useEffect(() => {
+        if (lists && lists.length > 0) {
+          lists.forEach((list) => {
+            dispatch(fetchCards(list._id));
+          });
+        }
+      }, [lists, dispatch]);
+
+
 
     useEffect(() => {
         // 🧩 When a new list is created in this board (by any user)
@@ -65,12 +81,12 @@ export default function BoardDetails() {
 
       const handleCreateCard = async (listId, title) => {
         if (!title.trim()) return;
-        await dispatch(createCard({ listId, title }));
+        await dispatch(createCard({ listId, title, boardId: id }));
       };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-2xl font-bold text-indigo-700 mb-6">Board Details</h1>
+      <h1 className="text-2xl font-bold text-indigo-700 mb-6">  {currentBoard ? currentBoard.title : "Loading..."}</h1>
 
       {/*  Invite Member Section —  UI */}
       <form onSubmit={handleInvite} className="flex gap-2 mb-6">
