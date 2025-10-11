@@ -138,8 +138,8 @@ export default function BoardDetails() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-2xl font-bold text-indigo-700 mb-6">  {currentBoard ? currentBoard.title : "Loading..."}</h1>
+    <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-8">
+      <h1 className="text-3xl font-bold text-indigo-700 mb-8 text-center md:text-left">  {currentBoard ? currentBoard.title : "Loading..."}</h1>
         {!loading && lists.length === 0 && (
           <div className="text-center text-gray-500 mb-6">
             <p>No lists yet — start by creating one!</p>
