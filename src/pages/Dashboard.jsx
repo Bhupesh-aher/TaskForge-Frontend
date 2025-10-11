@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBoards, createBoard } from "../features/boards/boardSlice";
 import { Link } from "react-router-dom";
+import LoadingSkeleton from "../components/LoadingSkeleton";
+import { motion } from "framer-motion";
+
 
 
 export default function Dashboard() {
@@ -39,23 +42,39 @@ export default function Dashboard() {
         {error && <p className="text-red-500">{error}</p>}
 
         {/* Board List */}
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {boards.length > 0 ? (
-            boards.map((board) => (
-              <Link key={board._id} to={`/board/${board._id}`}>
-              <div className="bg-white shadow-md rounded-lg p-5 cursor-pointer hover:shadow-xl transition">
-                <h2 className="text-xl font-semibold text-gray-700">{board.title}</h2>
-                <p className="text-sm text-gray-500 mt-2">
-                  Members: {board.members?.length || 1}
-                </p>
-              </div>
-              </Link>
-            ))
-          ) : (
-            <p className="text-gray-500">No boards yet. Create one!</p>
-          )}
-        </div>
+        {/* Board List */}
+<div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
+  {loading ? (
+    <>
+      <LoadingSkeleton />
+      <LoadingSkeleton />
+      <LoadingSkeleton />
+    </>
+  ) : boards.length === 0 ? (
+    <div className="col-span-full text-center text-gray-500 py-12">
+      <p className="text-lg font-medium">You don’t have any boards yet 😅</p>
+      <p className="text-sm text-gray-400 mt-1">Create one to get started.</p>
+    </div>
+  ) : (
+    boards.map((board) => (
+          <Link key={board._id} to={`/board/${board._id}`}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white shadow-md rounded-lg p-5 cursor-pointer hover:shadow-lg transition"
+            >
+              <h2 className="text-xl font-semibold text-indigo-700">
+                {board.title}
+              </h2>
+              <p className="text-sm text-gray-500 mt-2">
+                Members: {board.members?.length || 1}
+              </p>
+            </motion.div>
+          </Link>
+        ))
+      )}
       </div>
+    </div>
 
       {/* Modal for Creating Board */}
       {isModalOpen && (
