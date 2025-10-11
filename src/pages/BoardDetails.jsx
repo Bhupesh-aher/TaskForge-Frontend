@@ -9,6 +9,7 @@ import { fetchBoardById } from "../features/boards/boardSlice";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { addCard, setCardsForList } from "../features/cards/cardSlice";
+import { motion } from "framer-motion";
 
 
 
@@ -171,9 +172,12 @@ export default function BoardDetails() {
               lists.map((list) => (
                 <Droppable droppableId={list._id} key={list._id}>
                   {(provided) => (
-                    <div
+                    <motion.div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.25 }}
                       className="bg-white shadow rounded-lg p-4 min-w-[250px]"
                     >
                       <h2 className="font-semibold text-gray-700 mb-3">{list.title}</h2>
@@ -189,7 +193,7 @@ export default function BoardDetails() {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className="bg-gray-100 p-2 rounded text-sm shadow-sm"
+                                className="bg-gray-100 p-2 rounded text-sm hover:shadow-md hover:scale-[1.01] transition-transform duration-150"
                               >
                                 {card.title}
                               </div>
@@ -199,7 +203,7 @@ export default function BoardDetails() {
                         {provided.placeholder}
                       </div>
                       <AddCardForm onAdd={(title) => handleCreateCard(list._id, title)} />
-                    </div>
+                    </motion.div>
                   )}
                 </Droppable>
               ))
