@@ -7,6 +7,10 @@ import { socket } from "../socket";
 import { addBoardMember } from "../features/boards/boardSlice";
 import { fetchBoardById } from "../features/boards/boardSlice";
 import LoadingSkeleton from "../components/LoadingSkeleton";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { addCard, setCardsForList } from "../features/cards/cardSlice";
+
+
 
 
 
@@ -86,6 +90,52 @@ export default function BoardDetails() {
         await dispatch(createCard({ listId, title, boardId: id }));
       };
 
+      const handleDragEnd = (result) => {
+          const { destination, source, draggableId } = result;
+
+          if (!destination) return; // Dropped outside any list
+          if (
+            destination.droppableId === source.droppableId &&
+            destination.index === source.index
+          )
+            return; // No position change
+
+          // Prepare source/target list arrays
+          const sourceListId = source.droppableId;
+          const destListId = destination.droppableId;
+          const draggedCard = cardsByList[sourceListId][source.index];
+
+          // Update Redux optimistically
+          const updatedSource = [...cardsByList[sourceListId]];
+          updatedSource.splice(source.index, 1);
+
+          const updatedDest =
+            sourceListId === destListId
+              ? updatedSource
+              : [...(cardsByList[destListId] || [])];
+
+          if (sourceListId === destListId) {
+            updatedDest.splice(destination.index, 0, draggedCard);
+            dispatch({
+              type: "cards/setCardsForList",
+              payload: { listId: destListId, cards: updatedDest },
+            });
+          } else {
+            updatedDest.splice(destination.index, 0, draggedCard);
+            dispatch({
+              type: "cards/setCardsForList",
+              payload: { listId: sourceListId, cards: updatedSource },
+            });
+            dispatch({
+              type: "cards/setCardsForList",
+              payload: { listId: destListId, cards: updatedDest },
+            });
+          }
+
+          // (optional) send backend update later
+        };
+
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <h1 className="text-2xl font-bold text-indigo-700 mb-6">  {currentBoard ? currentBoard.title : "Loading..."}</h1>
@@ -109,54 +159,75 @@ export default function BoardDetails() {
       </form>
 
 
-      <div className="flex space-x-6 overflow-x-auto">
-        {loading ? (
-          <>
-            <LoadingSkeleton />
-            <LoadingSkeleton />
-            <LoadingSkeleton />
-          </>
-        ) : (
-          lists.map((list) => (
-            <div key={list._id} className="bg-white shadow rounded-lg p-4 min-w-[250px]">
-              <h2 className="font-semibold text-gray-700 mb-3">{list.title}</h2>
-              <div className="space-y-3">
-                {(cardsByList[list._id] || []).map((card) => (
-                  <div
-                    key={card._id}
-                    className="bg-gray-100 p-2 rounded text-sm shadow-sm"
-                  >
-                    {card.title}
-                  </div>
-                ))}
-              </div>
-              <AddCardForm onAdd={(title) => handleCreateCard(list._id, title)} />
-            </div>
-          ))
-        )}
+      <DragDropContext onDragEnd={handleDragEnd}>
+          <div className="flex space-x-6 overflow-x-auto">
+            {loading ? (
+              <>
+                <LoadingSkeleton />
+                <LoadingSkeleton />
+                <LoadingSkeleton />
+              </>
+            ) : (
+              lists.map((list) => (
+                <Droppable droppableId={list._id} key={list._id}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className="bg-white shadow rounded-lg p-4 min-w-[250px]"
+                    >
+                      <h2 className="font-semibold text-gray-700 mb-3">{list.title}</h2>
+                      <div className="space-y-3">
+                        {(cardsByList[list._id] || []).map((card, index) => (
+                          <Draggable
+                            key={card._id}
+                            draggableId={card._id}
+                            index={index}
+                          >
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className="bg-gray-100 p-2 rounded text-sm shadow-sm"
+                              >
+                                {card.title}
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                      <AddCardForm onAdd={(title) => handleCreateCard(list._id, title)} />
+                    </div>
+                  )}
+                </Droppable>
+              ))
+            )}
 
-        {/* Create List */}
-        {!loading && (
-        <form
-          onSubmit={handleCreateList}
-          className="bg-indigo-50 p-4 rounded-lg min-w-[250px]"
-        >
-          <input
-            type="text"
-            placeholder="New list title"
-            value={newList}
-            onChange={(e) => setNewList(e.target.value)}
-            className="w-full border px-3 py-2 rounded mb-3 focus:outline-indigo-500"
-          />
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700"
-          >
-            + Add List
-          </button>
-        </form>
-         )}
-      </div>
+            {/* Create List */}
+            {!loading && (
+              <form
+                onSubmit={handleCreateList}
+                className="bg-indigo-50 p-4 rounded-lg min-w-[250px]"
+              >
+                <input
+                  type="text"
+                  placeholder="New list title"
+                  value={newList}
+                  onChange={(e) => setNewList(e.target.value)}
+                  className="w-full border px-3 py-2 rounded mb-3 focus:outline-indigo-500"
+                />
+                <button
+                  type="submit"
+                  className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700"
+                >
+                  + Add List
+                </button>
+              </form>
+            )}
+          </div>
+        </DragDropContext>
     </div>
   );
 }

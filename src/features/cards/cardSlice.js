@@ -49,6 +49,11 @@ const cardSlice = createSlice({
       const exists = state.cardsByList[listId].some((c) => c._id === card._id);
       if (!exists) state.cardsByList[listId].push(card);
     },
+    setCardsForList: (state, action) => {
+      const { listId, cards } = action.payload;
+      state.cardsByList[listId] = cards;
+    },
+
   },
   extraReducers: (builder) => {
     builder
@@ -71,5 +76,5 @@ const cardSlice = createSlice({
   },
 });
 
-
+export const { addCard, setCardsForList } = cardSlice.actions;
 export default cardSlice.reducer;
