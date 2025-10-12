@@ -1,11 +1,14 @@
 import axios from "axios";
 
-const isProd = import.meta.env.MODE === "production";
-const baseURL = isProd
-  ? import.meta.env.VITE_API_BASE_URL_PROD
-  : import.meta.env.VITE_API_BASE_URL;
+const baseURL =
+  import.meta.env.MODE === "development"
+    ? import.meta.env.VITE_API_BASE_URL
+    : import.meta.env.VITE_API_BASE_URL_PROD;
 
-const API = axios.create({ baseURL });
+const API = axios.create({ 
+  baseURL,
+  withCredentials: true,
+ });
 
 // Add token automatically if available
 API.interceptors.request.use((req) => {
