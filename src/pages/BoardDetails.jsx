@@ -10,6 +10,8 @@ import LoadingSkeleton from "../components/LoadingSkeleton";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { addCard, setCardsForList } from "../features/cards/cardSlice";
 import { motion } from "framer-motion";
+import API from "../api/axiosInstance";
+
 
 
 
@@ -91,7 +93,7 @@ export default function BoardDetails() {
         await dispatch(createCard({ listId, title, boardId: id }));
       };
 
-      const handleDragEnd = (result) => {
+      const handleDragEnd = async (result) => {
           const { destination, source, draggableId } = result;
 
           if (!destination) return; // Dropped outside any list
@@ -133,7 +135,18 @@ export default function BoardDetails() {
             });
           }
 
-          // (optional) send backend update later
+          // Persist move to backend
+          try {
+            console.log("Persisting move:", { draggableId, destListId, position: destination.index });
+ 
+            const res = await API.patch(`/cards/${draggableId}/move`, {
+              destinationListId: destListId,
+              position: destination.index,
+            });
+            // console.log("Move persisted:", res.data);
+          } catch (error) {
+            console.error("Failed to persist move:",  error);
+          }
         };
 
 
