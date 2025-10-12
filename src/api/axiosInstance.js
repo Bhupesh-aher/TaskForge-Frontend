@@ -1,8 +1,11 @@
 import axios from "axios";
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api", // change later to your backend URL when deployed
-});
+const isProd = import.meta.env.MODE === "production";
+const baseURL = isProd
+  ? import.meta.env.VITE_API_BASE_URL_PROD
+  : import.meta.env.VITE_API_BASE_URL;
+
+const API = axios.create({ baseURL });
 
 // Add token automatically if available
 API.interceptors.request.use((req) => {
