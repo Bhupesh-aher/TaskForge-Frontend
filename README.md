@@ -1,5 +1,20 @@
 # ⚡ TaskForge – Trello-Style Project Management Frontend
 
+<p align="center">
+  <img src="https://img.shields.io/badge/MERN-Stack-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Realtime-Socket.io-green?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Deployed%20on-Render%20%26%20Vercel-orange?style=for-the-badge" />
+</p>
+
+<p align="center">
+  🚀 <b>TaskForge</b> — A Trello-style collaborative task management app with real-time updates, drag-and-drop lists, and persistent cards.
+  <br/>
+  <a href="https://task-forge-frontend.vercel.app" target="_blank"><b>🌐 Live Frontend</b></a> | 
+  <a href="https://taskforge-backend-jjdh.onrender.com/api/docs" target="_blank"><b>📘 Backend Swagger Docs</b></a>
+</p>
+
+
+
 **Frontend Live URL:** [https://task-forge-frontend.vercel.app](https://task-forge-frontend.vercel.app)  
 **Backend API:** [https://taskforge-backend-jjdh.onrender.com](https://taskforge-backend-jjdh.onrender.com)  
 **Swagger Docs:** [https://taskforge-backend-jjdh.onrender.com/api/docs](https://taskforge-backend-jjdh.onrender.com/api/docs)
